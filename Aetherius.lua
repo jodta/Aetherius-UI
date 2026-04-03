@@ -163,8 +163,8 @@ function Aetherius:CreateWindow(Config)
     function Window:CreateTab(TabName)
         local TabBtn = Instance.new("TextButton", TabContainer)
         TabBtn.Name = TabName .. "_Tab"
-        TabBtn.BackgroundColor3 = Theme.Accent
-        TabBtn.BackgroundTransparency = 1
+        TabBtn.BackgroundColor3 = Theme.Secondary -- Brighter default base
+        TabBtn.BackgroundTransparency = 0.85 -- Visible but subtle
         TabBtn.Size = UDim2.new(1, 0, 0, 32)
         TabBtn.Font = Enum.Font.GothamMedium
         TabBtn.Text = TabName
@@ -200,17 +200,17 @@ function Aetherius:CreateWindow(Config)
         TabBtn.MouseButton1Click:Connect(function()
             for _, t in pairs(Window.Tabs) do
                 t.Page.Visible = false
-                TweenService:Create(t.Btn, TweenInfo.new(0.2), {BackgroundTransparency = 1, TextColor3 = Theme.SubText}):Play()
+                TweenService:Create(t.Btn, TweenInfo.new(0.2), {BackgroundTransparency = 0.85, TextColor3 = Theme.SubText}):Play()
             end
             Page.Visible = true
-            TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.88, TextColor3 = Theme.Text}):Play()
+            TweenService:Create(TabBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.75, TextColor3 = Theme.Text}):Play()
             Window.ActiveTab = TabObj
         end)
         
         table.insert(Window.Tabs, TabObj)
         if #Window.Tabs == 1 then
             Page.Visible = true
-            TabBtn.BackgroundTransparency = 0.88
+            TabBtn.BackgroundTransparency = 0.75
             TabBtn.TextColor3 = Theme.Text
             Window.ActiveTab = TabObj
         end
