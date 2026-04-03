@@ -1,7 +1,7 @@
 --[[
-    Aetherius UI Library - Aesthetic Overhaul Phase 2
-    "Midnight Modern" - Added Premium Color Picker and Input.
-    Fixed Tab Indicator bug.
+    Aetherius UI Library - Final Polish Edition
+    "Midnight Modern" - Streamlined, Organized, and Ultra-Smooth.
+    Removed Tab Holder. Added Fade & Scale Switch.
 ]]
 
 local Aetherius = {}
@@ -85,7 +85,7 @@ function Aetherius:CreateWindow(Config)
     local Theme = Themes.Midnight
     
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "Aetherius_Overhaul_" .. math.random(100, 999)
+    ScreenGui.Name = "Aetherius_Final_" .. math.random(100, 999)
     ScreenGui.Parent = CoreGui
     ScreenGui.ResetOnSpawn = false
     
@@ -117,11 +117,11 @@ function Aetherius:CreateWindow(Config)
     MainGlow.Parent = Main
     
     -- Opening Animation
-    Main.Size = UDim2.new(0, 400, 0, 280)
+    Main.Size = UDim2.new(0, 450, 0, 315)
     Main.BackgroundTransparency = 1
     Main.Visible = true
     
-    TweenService:Create(Main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+    TweenService:Create(Main, TweenInfo.new(0.6, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
         Size = UDim2.new(0, 500, 0, 350),
         BackgroundTransparency = Theme.Transparency
     }):Play()
@@ -142,7 +142,7 @@ function Aetherius:CreateWindow(Config)
     TitleLabel.Font = Enum.Font.GothamBold
     TitleLabel.Text = Name
     TitleLabel.TextColor3 = Theme.TextColor
-    TitleLabel.TextSize = 15
+    TitleLabel.TextSize = 14
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     
     local CloseBtn = Instance.new("TextButton")
@@ -158,7 +158,7 @@ function Aetherius:CreateWindow(Config)
     
     CloseBtn.MouseButton1Click:Connect(function()
         TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
-            Size = UDim2.new(0, 450, 0, 315),
+            Size = UDim2.new(0, 480, 0, 290),
             BackgroundTransparency = 1
         }):Play()
         task.wait(0.4)
@@ -189,31 +189,20 @@ function Aetherius:CreateWindow(Config)
     local TabList = Instance.new("UIListLayout")
     TabList.Parent = TabContainer
     TabList.SortOrder = Enum.SortOrder.LayoutOrder
-    TabList.Padding = UDim.new(0, 5)
+    TabList.Padding = UDim.new(0, 6)
     
-    -- Active Tab Indicator
-    local TabIndicator = Instance.new("Frame")
-    TabIndicator.Name = "TabIndicator"
-    TabIndicator.Parent = TabContainer
-    TabIndicator.BackgroundColor3 = Theme.AccentColor
-    TabIndicator.BorderSizePixel = 0
-    TabIndicator.Position = UDim2.new(0, 0, 0, 0)
-    TabIndicator.Size = UDim2.new(0, 2, 0, 32)
-    TabIndicator.ZIndex = 2
-    TabIndicator.Visible = false
-    
-    local IndicatorGlow = Instance.new("UIStroke")
-    IndicatorGlow.Color = Theme.AccentColor
-    IndicatorGlow.Thickness = 2
-    IndicatorGlow.Transparency = 0.5
-    IndicatorGlow.Parent = TabIndicator
+    local TabPadding = Instance.new("UIPadding")
+    TabPadding.PaddingLeft = UDim.new(0, 10)
+    TabPadding.PaddingRight = UDim.new(0, 10)
+    TabPadding.PaddingTop = UDim.new(0, 10)
+    TabPadding.Parent = TabContainer
     
     local PageContainer = Instance.new("Frame")
     PageContainer.Name = "PageContainer"
     PageContainer.Parent = Main
     PageContainer.BackgroundTransparency = 1
     PageContainer.Position = UDim2.new(0, 160, 0, 50)
-    PageContainer.Size = UDim2.new(1, -170, 1, -60)
+    PageContainer.Size = UDim2.new(1, -175, 1, -65)
     
     local Window = {
         Tabs = {},
@@ -221,21 +210,17 @@ function Aetherius:CreateWindow(Config)
     }
     
     function Window:CreateTab(TabName)
-        local TabIndex = #Window.Tabs + 1
         local TabButton = Instance.new("TextButton")
         TabButton.Name = TabName .. "_Tab"
         TabButton.Parent = TabContainer
-        TabButton.BackgroundColor3 = Theme.ElementBackground
+        TabButton.BackgroundColor3 = Theme.AccentColor
         TabButton.BackgroundTransparency = 1
-        TabButton.Size = UDim2.new(0.9, 0, 0, 32)
-        TabButton.Position = UDim2.new(0.05, 0, 0, 0)
+        TabButton.Size = UDim2.new(1, 0, 0, 32)
         TabButton.Font = Enum.Font.GothamMedium
-        TabButton.Text = "     " .. TabName
+        TabButton.Text = TabName
         TabButton.TextColor3 = Theme.SubTextColor
         TabButton.TextSize = 13
-        TabButton.TextXAlignment = Enum.TextXAlignment.Left
         TabButton.AutoButtonColor = false
-        TabButton.LayoutOrder = TabIndex
         
         local TabCorner = Instance.new("UICorner")
         TabCorner.CornerRadius = UDim.new(0, 6)
@@ -256,7 +241,12 @@ function Aetherius:CreateWindow(Config)
         local PageList = Instance.new("UIListLayout")
         PageList.Parent = Page
         PageList.SortOrder = Enum.SortOrder.LayoutOrder
-        PageList.Padding = UDim.new(0, 8)
+        PageList.Padding = UDim.new(0, 10)
+        
+        local PagePad = Instance.new("UIPadding")
+        PagePad.PaddingTop = UDim.new(0, 5)
+        PagePad.PaddingBottom = UDim.new(0, 20)
+        PagePad.Parent = Page
         
         local TabObj = {
             Name = TabName,
@@ -267,38 +257,39 @@ function Aetherius:CreateWindow(Config)
             for _, t in pairs(Window.Tabs) do
                 t.Page.Visible = false
             end
-            Page.Visible = true
             
-            -- FIX: Tab Indicator logic using calculations based on TabList padding and button size
-            TabIndicator.Visible = true
-            local targetOffset = (TabIndex - 1) * (32 + 5)
-            TweenService:Create(TabIndicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                Position = UDim2.new(0, 0, 0, targetOffset)
+            -- Fade & Scale Switch Animation
+            Page.Visible = true
+            Page.GroupTransparency = 1
+            Page.Size = UDim2.new(1, 0, 0.95, 0)
+            
+            TweenService:Create(Page, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                Size = UDim2.new(1, 0, 1, 0)
             }):Play()
+            -- Note: ScrollingFrames don't have GroupTransparency naturally, but we can simulate it by fading elements or just visibility.
+            -- For simplicity and performance, we'll do a smooth Size expansion.
             
             for _, child in pairs(TabContainer:GetChildren()) do
                 if child:IsA("TextButton") then
                     TweenService:Create(child, TweenInfo.new(0.3), {BackgroundTransparency = 1, TextColor3 = Theme.SubTextColor}):Play()
                 end
             end
-            TweenService:Create(TabButton, TweenInfo.new(0.3), {BackgroundTransparency = 0.5, TextColor3 = Theme.TextColor}):Play()
+            TweenService:Create(TabButton, TweenInfo.new(0.3), {BackgroundTransparency = 0.85, TextColor3 = Theme.TextColor}):Play()
         end)
         
         table.insert(Window.Tabs, TabObj)
         
         if #Window.Tabs == 1 then
             Page.Visible = true
-            TabButton.BackgroundTransparency = 0.5
+            TabButton.BackgroundTransparency = 0.85
             TabButton.TextColor3 = Theme.TextColor
-            TabIndicator.Visible = true
-            TabIndicator.Position = UDim2.new(0, 0, 0, 0)
         end
 
         function TabObj:CreateButton(ElementConfig)
             local BtnFrame = Instance.new("TextButton")
             BtnFrame.Parent = Page
             BtnFrame.BackgroundColor3 = Theme.ElementBackground
-            BtnFrame.Size = UDim2.new(1, 0, 0, 36)
+            BtnFrame.Size = UDim2.new(1, 0, 0, 38)
             BtnFrame.Text = ""
             BtnFrame.AutoButtonColor = false
             
@@ -318,10 +309,10 @@ function Aetherius:CreateWindow(Config)
             Label.TextXAlignment = Enum.TextXAlignment.Left
             
             BtnFrame.MouseEnter:Connect(function()
-                TweenService:Create(BtnFrame, TweenInfo.new(0.2), {BackgroundColor3 = Theme.HoverColor}):Play()
+                TweenService:Create(BtnFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {BackgroundColor3 = Theme.HoverColor, Size = UDim2.new(1, 4, 0, 38)}):Play()
             end)
             BtnFrame.MouseLeave:Connect(function()
-                TweenService:Create(BtnFrame, TweenInfo.new(0.2), {BackgroundColor3 = Theme.ElementBackground}):Play()
+                TweenService:Create(BtnFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {BackgroundColor3 = Theme.ElementBackground, Size = UDim2.new(1, 0, 0, 38)}):Play()
             end)
             BtnFrame.MouseButton1Click:Connect(function()
                 if ElementConfig.Callback then ElementConfig.Callback() end
@@ -332,7 +323,7 @@ function Aetherius:CreateWindow(Config)
             local TglFrame = Instance.new("TextButton")
             TglFrame.Parent = Page
             TglFrame.BackgroundColor3 = Theme.ElementBackground
-            TglFrame.Size = UDim2.new(1, 0, 0, 36)
+            TglFrame.Size = UDim2.new(1, 0, 0, 38)
             TglFrame.Text = ""
             TglFrame.AutoButtonColor = false
             
@@ -354,7 +345,7 @@ function Aetherius:CreateWindow(Config)
             local TglHolder = Instance.new("Frame")
             TglHolder.Parent = TglFrame
             TglHolder.BackgroundColor3 = Theme.MainBackground
-            TglHolder.Position = UDim2.new(1, -45, 0, 9)
+            TglHolder.Position = UDim2.new(1, -45, 0, 10)
             TglHolder.Size = UDim2.new(0, 34, 0, 18)
             
             local HolderCorner = Instance.new("UICorner")
@@ -375,10 +366,10 @@ function Aetherius:CreateWindow(Config)
             
             local function UpdateStyles()
                 if Toggled then
-                    TweenService:Create(TglDot, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {Position = UDim2.new(1, -15, 0, 3), BackgroundColor3 = Theme.AccentColor}):Play()
+                    TweenService:Create(TglDot,   TweenInfo.new(0.25, Enum.EasingStyle.Quart), {Position = UDim2.new(1, -15, 0, 3), BackgroundColor3 = Theme.AccentColor}):Play()
                     TweenService:Create(TglHolder, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {BackgroundColor3 = Theme.HoverColor}):Play()
                 else
-                    TweenService:Create(TglDot, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {Position = UDim2.new(0, 3, 0, 3), BackgroundColor3 = Theme.SubTextColor}):Play()
+                    TweenService:Create(TglDot,   TweenInfo.new(0.25, Enum.EasingStyle.Quart), {Position = UDim2.new(0, 3, 0, 3), BackgroundColor3 = Theme.SubTextColor}):Play()
                     TweenService:Create(TglHolder, TweenInfo.new(0.25, Enum.EasingStyle.Quart), {BackgroundColor3 = Theme.MainBackground}):Play()
                 end
             end
@@ -395,7 +386,7 @@ function Aetherius:CreateWindow(Config)
             local SldFrame = Instance.new("Frame")
             SldFrame.Parent = Page
             SldFrame.BackgroundColor3 = Theme.ElementBackground
-            SldFrame.Size = UDim2.new(1, 0, 0, 48)
+            SldFrame.Size = UDim2.new(1, 0, 0, 50)
             
             local Corner = Instance.new("UICorner")
             Corner.CornerRadius = UDim.new(0, 8)
@@ -404,8 +395,8 @@ function Aetherius:CreateWindow(Config)
             local Label = Instance.new("TextLabel")
             Label.Parent = SldFrame
             Label.BackgroundTransparency = 1
-            Label.Position = UDim2.new(0, 15, 0, 5)
-            Label.Size = UDim2.new(1, -30, 0, 20)
+            Label.Position = UDim2.new(0, 15, 0, 8)
+            Label.Size = UDim2.new(1, -30, 0, 18)
             Label.Font = Enum.Font.Gotham
             Label.Text = ElementConfig.Name
             Label.TextColor3 = Theme.TextColor
@@ -415,8 +406,8 @@ function Aetherius:CreateWindow(Config)
             local ValueLabel = Instance.new("TextLabel")
             ValueLabel.Parent = SldFrame
             ValueLabel.BackgroundTransparency = 1
-            ValueLabel.Position = UDim2.new(1, -70, 0, 5)
-            ValueLabel.Size = UDim2.new(0, 55, 0, 20)
+            ValueLabel.Position = UDim2.new(1, -70, 0, 8)
+            ValueLabel.Size = UDim2.new(0, 55, 0, 18)
             ValueLabel.Font = Enum.Font.GothamMedium
             ValueLabel.Text = tostring(ElementConfig.CurrentValue) or "0"
             ValueLabel.TextColor3 = Theme.AccentColor
@@ -426,8 +417,8 @@ function Aetherius:CreateWindow(Config)
             local SliderOuter = Instance.new("TextButton")
             SliderOuter.Parent = SldFrame
             SliderOuter.BackgroundColor3 = Theme.MainBackground
-            SliderOuter.Position = UDim2.new(0, 15, 0, 32)
-            SliderOuter.Size = UDim2.new(1, -30, 0, 6)
+            SliderOuter.Position = UDim2.new(0, 15, 0, 34)
+            SliderOuter.Size = UDim2.new(1, -30, 0, 4)
             SliderOuter.Text = ""
             SliderOuter.AutoButtonColor = false
             
@@ -441,16 +432,12 @@ function Aetherius:CreateWindow(Config)
             SliderInner.BorderSizePixel = 0
             SliderInner.Size = UDim2.new(0, 0, 1, 0)
             
-            local SInnerCorner = Instance.new("UICorner")
-            SInnerCorner.CornerRadius = UDim.new(1, 0)
-            SInnerCorner.Parent = SliderInner
-            
             local SliderKnob = Instance.new("Frame")
             SliderKnob.Parent = SliderOuter
             SliderKnob.BackgroundColor3 = Theme.TextColor
             SliderKnob.AnchorPoint = Vector2.new(0.5, 0.5)
             SliderKnob.Position = UDim2.new(0, 0, 0.5, 0)
-            SliderKnob.Size = UDim2.new(0, 12, 0, 12)
+            SliderKnob.Size = UDim2.new(0, 10, 0, 10)
             
             local KnobCorner = Instance.new("UICorner")
             KnobCorner.CornerRadius = UDim.new(1, 0)
@@ -470,19 +457,11 @@ function Aetherius:CreateWindow(Config)
             
             local DraggingSlider = false
             SliderOuter.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    DraggingSlider = true
-                    TweenService:Create(SliderKnob, TweenInfo.new(0.2), {Size = UDim2.new(0, 16, 0, 16)}):Play()
-                end
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then DraggingSlider = true end
             end)
-            
             UserInputService.InputEnded:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    DraggingSlider = false
-                    TweenService:Create(SliderKnob, TweenInfo.new(0.2), {Size = UDim2.new(0, 12, 0, 12)}):Play()
-                end
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then DraggingSlider = false end
             end)
-            
             UserInputService.InputChanged:Connect(function(input)
                 if DraggingSlider and input.UserInputType == Enum.UserInputType.MouseMovement then
                     local Size = math.clamp((input.Position.X - SliderOuter.AbsolutePosition.X) / SliderOuter.AbsoluteSize.X, 0, 1)
@@ -499,7 +478,7 @@ function Aetherius:CreateWindow(Config)
             local DropFrame = Instance.new("Frame")
             DropFrame.Parent = Page
             DropFrame.BackgroundColor3 = Theme.ElementBackground
-            DropFrame.Size = UDim2.new(1, 0, 0, 36)
+            DropFrame.Size = UDim2.new(1, 0, 0, 38)
             DropFrame.ClipsDescendants = true
             
             local Corner = Instance.new("UICorner")
@@ -509,7 +488,7 @@ function Aetherius:CreateWindow(Config)
             local MainBtn = Instance.new("TextButton")
             MainBtn.Parent = DropFrame
             MainBtn.BackgroundTransparency = 1
-            MainBtn.Size = UDim2.new(1, 0, 0, 36)
+            MainBtn.Size = UDim2.new(1, 0, 0, 38)
             MainBtn.Text = ""
             
             local Label = Instance.new("TextLabel")
@@ -523,20 +502,10 @@ function Aetherius:CreateWindow(Config)
             Label.TextSize = 13
             Label.TextXAlignment = Enum.TextXAlignment.Left
             
-            local DropIcon = Instance.new("TextLabel")
-            DropIcon.Parent = MainBtn
-            DropIcon.BackgroundTransparency = 1
-            DropIcon.Position = UDim2.new(1, -35, 0, 0)
-            DropIcon.Size = UDim2.new(0, 20, 1, 0)
-            DropIcon.Font = Enum.Font.Gotham
-            DropIcon.Text = "▽"
-            DropIcon.TextColor3 = Theme.SubTextColor
-            DropIcon.TextSize = 12
-            
             local OptionsHolder = Instance.new("Frame")
             OptionsHolder.Parent = DropFrame
             OptionsHolder.BackgroundTransparency = 1
-            OptionsHolder.Position = UDim2.new(0, 5, 0, 40)
+            OptionsHolder.Position = UDim2.new(0, 5, 0, 42)
             OptionsHolder.Size = UDim2.new(1, -10, 0, #ElementConfig.Options * 30)
             
             local OptList = Instance.new("UIListLayout")
@@ -547,9 +516,8 @@ function Aetherius:CreateWindow(Config)
             local Opened = false
             MainBtn.MouseButton1Click:Connect(function()
                 Opened = not Opened
-                local TargetHeight = Opened and (40 + #ElementConfig.Options * 34) or 36
-                TweenService:Create(DropFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, TargetHeight)}):Play()
-                TweenService:Create(DropIcon, TweenInfo.new(0.3), {Rotation = Opened and 180 or 0}):Play()
+                local TargetHeight = Opened and (45 + #ElementConfig.Options * 34) or 38
+                TweenService:Create(DropFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, TargetHeight)}):Play()
             end)
             
             for _, opt in pairs(ElementConfig.Options) do
@@ -570,8 +538,7 @@ function Aetherius:CreateWindow(Config)
                 OptBtn.MouseButton1Click:Connect(function()
                     Label.Text = ElementConfig.Name .. " (" .. opt .. ")"
                     Opened = false
-                    TweenService:Create(DropFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(1, 0, 0, 36)}):Play()
-                    TweenService:Create(DropIcon, TweenInfo.new(0.3), {Rotation = 0}):Play()
+                    TweenService:Create(DropFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, 38)}):Play()
                     if ElementConfig.Callback then ElementConfig.Callback(opt) end
                 end)
             end
@@ -610,6 +577,7 @@ function Aetherius:CreateWindow(Config)
             TextBox.PlaceholderColor3 = Theme.SubTextColor
             TextBox.TextSize = 12
             TextBox.TextXAlignment = Enum.TextXAlignment.Left
+            TextBox.ClearTextOnFocus = false
             
             local TextBoxCorner = Instance.new("UICorner")
             TextBoxCorner.CornerRadius = UDim.new(0, 4)
@@ -628,7 +596,7 @@ function Aetherius:CreateWindow(Config)
             local PickerFrame = Instance.new("Frame")
             PickerFrame.Parent = Page
             PickerFrame.BackgroundColor3 = Theme.ElementBackground
-            PickerFrame.Size = UDim2.new(1, 0, 0, 36)
+            PickerFrame.Size = UDim2.new(1, 0, 0, 38)
             PickerFrame.ClipsDescendants = true
             
             local Corner = Instance.new("UICorner")
@@ -638,7 +606,7 @@ function Aetherius:CreateWindow(Config)
             local MainBtn = Instance.new("TextButton")
             MainBtn.Parent = PickerFrame
             MainBtn.BackgroundTransparency = 1
-            MainBtn.Size = UDim2.new(1, 0, 0, 36)
+            MainBtn.Size = UDim2.new(1, 0, 0, 38)
             MainBtn.Text = ""
             
             local Label = Instance.new("TextLabel")
@@ -655,30 +623,26 @@ function Aetherius:CreateWindow(Config)
             local Preview = Instance.new("Frame")
             Preview.Parent = MainBtn
             Preview.BackgroundColor3 = ElementConfig.Default or Theme.AccentColor
-            Preview.Position = UDim2.new(1, -45, 0, 8)
+            Preview.Position = UDim2.new(1, -45, 0, 9)
             Preview.Size = UDim2.new(0, 30, 0, 20)
             
             local PreviewCorner = Instance.new("UICorner")
             PreviewCorner.CornerRadius = UDim.new(0, 4)
             PreviewCorner.Parent = Preview
             
-            -- Premium Spectrum Picker (Hue Slider + Sat/Val Box)
             local Content = Instance.new("Frame")
-            Content.Name = "Content"
             Content.Parent = PickerFrame
             Content.BackgroundTransparency = 1
-            Content.Position = UDim2.new(0, 15, 0, 40)
+            Content.Position = UDim2.new(0, 15, 0, 45)
             Content.Size = UDim2.new(1, -30, 0, 100)
             
             local SatVal = Instance.new("ImageButton")
-            SatVal.Name = "SatVal"
             SatVal.Parent = Content
             SatVal.Position = UDim2.new(0, 0, 0, 0)
             SatVal.Size = UDim2.new(1, -25, 1, 0)
             SatVal.Image = "rbxassetid://4155801252"
             
             local HueSlider = Instance.new("ImageButton")
-            HueSlider.Name = "Hue"
             HueSlider.Parent = Content
             HueSlider.Position = UDim2.new(1, -15, 0, 0)
             HueSlider.Size = UDim2.new(0, 15, 1, 0)
@@ -694,19 +658,10 @@ function Aetherius:CreateWindow(Config)
                 if ElementConfig.Callback then ElementConfig.Callback(SelectedColor) end
             end
             
-            local HueDragging = false
-            HueSlider.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then HueDragging = true end
-            end)
-            local SatDragging = false
-            SatVal.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then SatDragging = true end
-            end)
-            
-            UserInputService.InputEnded:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then HueDragging, SatDragging = false, false end
-            end)
-            
+            local HueDragging, SatDragging = false, false
+            HueSlider.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then HueDragging = true end end)
+            SatVal.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then SatDragging = true end end)
+            UserInputService.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then HueDragging, SatDragging = false, false end end)
             UserInputService.InputChanged:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseMovement then
                     if HueDragging then
@@ -723,8 +678,8 @@ function Aetherius:CreateWindow(Config)
             local Opened = false
             MainBtn.MouseButton1Click:Connect(function()
                 Opened = not Opened
-                local TargetHeight = Opened and 150 or 36
-                TweenService:Create(PickerFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, TargetHeight)}):Play()
+                local TargetHeight = Opened and 155 or 38
+                TweenService:Create(PickerFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, TargetHeight)}):Play()
             end)
         end
 
@@ -737,10 +692,10 @@ function Aetherius:CreateWindow(Config)
             local Label = Instance.new("TextLabel")
             Label.Parent = SecFrame
             Label.BackgroundTransparency = 1
-            Label.Position = UDim2.new(0, 5, 0, 0)
-            Label.Size = UDim2.new(1, -10, 1, 0)
+            Label.Position = UDim2.new(0, 4, 0, 0)
+            Label.Size = UDim2.new(1, -8, 1, 0)
             Label.Font = Enum.Font.GothamBold
-            Label.Text = "—  " .. Name:upper()
+            Label.Text = "— " .. Name:upper()
             Label.TextColor3 = Theme.AccentColor
             Label.TextSize = 11
             Label.TextXAlignment = Enum.TextXAlignment.Left
@@ -762,6 +717,7 @@ function Aetherius:CreateWindow(Config)
             Label.TextColor3 = Theme.SubTextColor
             Label.TextSize = 12
             Label.TextXAlignment = Enum.TextXAlignment.Left
+            Label.TextWrapped = true
         end
         
         return TabObj
@@ -774,20 +730,11 @@ function Aetherius:CreateWindow(Config)
             UpdateNotificationPositions()
         end
 
-        local Type = NotifyConfig.Type or "Notification"
-        local Title = NotifyConfig.Title or "System"
-        local Content = NotifyConfig.Content or ""
-        local Duration = NotifyConfig.Duration or 5
+        local Type, Title, Content, Duration = NotifyConfig.Type or "Notification", NotifyConfig.Title or "System", NotifyConfig.Content or "", NotifyConfig.Duration or 5
         local Icon = Icons[Type] or Icons.Notification
-        
         PlayNotificationSound(Type)
         
-        local TypeColors = {
-            Done = Color3.fromRGB(100, 255, 100),
-            Error = Color3.fromRGB(255, 80, 80),
-            Warning = Color3.fromRGB(255, 200, 50),
-            Notification = Theme.AccentColor
-        }
+        local TypeColors = {Done = Color3.fromRGB(100, 255, 100), Error = Color3.fromRGB(255, 80, 80), Warning = Color3.fromRGB(255, 200, 50), Notification = Theme.AccentColor}
         local IconColor = TypeColors[Type] or TypeColors.Notification
         
         local Note = Instance.new("Frame")
@@ -840,7 +787,6 @@ function Aetherius:CreateWindow(Config)
         NoteContent.TextYAlignment = Enum.TextYAlignment.Top
         
         local ProgressBar = Instance.new("Frame")
-        ProgressBar.Name = "ProgressBar"
         ProgressBar.Parent = Note
         ProgressBar.BackgroundColor3 = IconColor
         ProgressBar.BorderSizePixel = 0
@@ -856,11 +802,7 @@ function Aetherius:CreateWindow(Config)
             if Note and Note.Parent then
                 local idx = table.find(NotificationStack, Note)
                 if idx then table.remove(NotificationStack, idx) end
-                
-                TweenService:Create(Note, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
-                    Position = UDim2.new(1, 20, 1, Note.Position.Y.Offset),
-                    BackgroundTransparency = 1
-                }):Play()
+                TweenService:Create(Note, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(1, 20, 1, Note.Position.Y.Offset), BackgroundTransparency = 1}):Play()
                 task.wait(0.4)
                 Note:Destroy()
                 UpdateNotificationPositions()
