@@ -1,7 +1,7 @@
 --[[
-    Aetherius UI Library - Aesthetic Overhaul Edition
-    "Midnight Modern" - Gradients, Glows, and Fluid Animations.
-    Inspired by high-fidelity premium libraries.
+    Aetherius UI Library - Aesthetic Overhaul Phase 2
+    "Midnight Modern" - Added Premium Color Picker and Input.
+    Fixed Tab Indicator bug.
 ]]
 
 local Aetherius = {}
@@ -98,19 +98,11 @@ function Aetherius:CreateWindow(Config)
     Main.Position = UDim2.new(0.5, -250, 0.5, -175)
     Main.Size = UDim2.new(0, 500, 0, 350)
     Main.ClipsDescendants = true
-    Main.Visible = false -- For Opening Animation
+    Main.Visible = false
     
     local MainCorner = Instance.new("UICorner")
     MainCorner.CornerRadius = UDim.new(0, 10)
     MainCorner.Parent = Main
-    
-    local MainGradient = Instance.new("UIGradient")
-    MainGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Theme.MainBackground),
-        ColorSequenceKeypoint.new(1, Theme.SidebarBackground)
-    })
-    MainGradient.Rotation = 45
-    MainGradient.Parent = Main
     
     local MainStroke = Instance.new("UIStroke")
     MainStroke.Color = Theme.BorderColor
@@ -122,7 +114,7 @@ function Aetherius:CreateWindow(Config)
     MainGlow.Color = Theme.GlowColor
     MainGlow.Thickness = 1
     MainGlow.Transparency = 0.7
-    MainGlow.Parent = Main -- Static Glow
+    MainGlow.Parent = Main
     
     -- Opening Animation
     Main.Size = UDim2.new(0, 400, 0, 280)
@@ -185,14 +177,6 @@ function Aetherius:CreateWindow(Config)
     Sidebar.Position = UDim2.new(0, 0, 0, 40)
     Sidebar.Size = UDim2.new(0, 150, 1, -40)
     
-    local SidebarGradient = Instance.new("UIGradient")
-    SidebarGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.new(1,1,1)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 200, 200))
-    })
-    SidebarGradient.Rotation = 90
-    SidebarGradient.Parent = Sidebar
-    
     local TabContainer = Instance.new("ScrollingFrame")
     TabContainer.Name = "TabContainer"
     TabContainer.Parent = Sidebar
@@ -214,7 +198,7 @@ function Aetherius:CreateWindow(Config)
     TabIndicator.BackgroundColor3 = Theme.AccentColor
     TabIndicator.BorderSizePixel = 0
     TabIndicator.Position = UDim2.new(0, 0, 0, 0)
-    TabIndicator.Size = UDim2.new(0, 3, 0, 30)
+    TabIndicator.Size = UDim2.new(0, 2, 0, 32)
     TabIndicator.ZIndex = 2
     TabIndicator.Visible = false
     
@@ -237,6 +221,7 @@ function Aetherius:CreateWindow(Config)
     }
     
     function Window:CreateTab(TabName)
+        local TabIndex = #Window.Tabs + 1
         local TabButton = Instance.new("TextButton")
         TabButton.Name = TabName .. "_Tab"
         TabButton.Parent = TabContainer
@@ -250,6 +235,7 @@ function Aetherius:CreateWindow(Config)
         TabButton.TextSize = 13
         TabButton.TextXAlignment = Enum.TextXAlignment.Left
         TabButton.AutoButtonColor = false
+        TabButton.LayoutOrder = TabIndex
         
         local TabCorner = Instance.new("UICorner")
         TabCorner.CornerRadius = UDim.new(0, 6)
@@ -283,13 +269,13 @@ function Aetherius:CreateWindow(Config)
             end
             Page.Visible = true
             
-            -- Indicator Animation
+            -- FIX: Tab Indicator logic using calculations based on TabList padding and button size
             TabIndicator.Visible = true
-            TweenService:Create(TabIndicator, TweenInfo.new(0.3, Enum.EasingStyle.Quart), {
-                Position = UDim2.new(0, 0, 0, TabButton.Position.Y.Offset)
+            local targetOffset = (TabIndex - 1) * (32 + 5)
+            TweenService:Create(TabIndicator, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+                Position = UDim2.new(0, 0, 0, targetOffset)
             }):Play()
             
-            -- Visual feedback
             for _, child in pairs(TabContainer:GetChildren()) do
                 if child:IsA("TextButton") then
                     TweenService:Create(child, TweenInfo.new(0.3), {BackgroundTransparency = 1, TextColor3 = Theme.SubTextColor}):Play()
@@ -310,7 +296,6 @@ function Aetherius:CreateWindow(Config)
 
         function TabObj:CreateButton(ElementConfig)
             local BtnFrame = Instance.new("TextButton")
-            BtnFrame.Name = ElementConfig.Name .. "_Btn"
             BtnFrame.Parent = Page
             BtnFrame.BackgroundColor3 = Theme.ElementBackground
             BtnFrame.Size = UDim2.new(1, 0, 0, 36)
@@ -345,7 +330,6 @@ function Aetherius:CreateWindow(Config)
 
         function TabObj:CreateToggle(ElementConfig)
             local TglFrame = Instance.new("TextButton")
-            TglFrame.Name = ElementConfig.Name .. "_Tgl"
             TglFrame.Parent = Page
             TglFrame.BackgroundColor3 = Theme.ElementBackground
             TglFrame.Size = UDim2.new(1, 0, 0, 36)
@@ -409,7 +393,6 @@ function Aetherius:CreateWindow(Config)
 
         function TabObj:CreateSlider(ElementConfig)
             local SldFrame = Instance.new("Frame")
-            SldFrame.Name = ElementConfig.Name .. "_Sld"
             SldFrame.Parent = Page
             SldFrame.BackgroundColor3 = Theme.ElementBackground
             SldFrame.Size = UDim2.new(1, 0, 0, 48)
@@ -435,7 +418,7 @@ function Aetherius:CreateWindow(Config)
             ValueLabel.Position = UDim2.new(1, -70, 0, 5)
             ValueLabel.Size = UDim2.new(0, 55, 0, 20)
             ValueLabel.Font = Enum.Font.GothamMedium
-            ValueLabel.Text = tostring(ElementConfig.CurrentValue)
+            ValueLabel.Text = tostring(ElementConfig.CurrentValue) or "0"
             ValueLabel.TextColor3 = Theme.AccentColor
             ValueLabel.TextSize = 13
             ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
@@ -462,7 +445,6 @@ function Aetherius:CreateWindow(Config)
             SInnerCorner.CornerRadius = UDim.new(1, 0)
             SInnerCorner.Parent = SliderInner
             
-            -- Slider Knob
             local SliderKnob = Instance.new("Frame")
             SliderKnob.Parent = SliderOuter
             SliderKnob.BackgroundColor3 = Theme.TextColor
@@ -515,7 +497,6 @@ function Aetherius:CreateWindow(Config)
 
         function TabObj:CreateDropdown(ElementConfig)
             local DropFrame = Instance.new("Frame")
-            DropFrame.Name = ElementConfig.Name .. "_Drop"
             DropFrame.Parent = Page
             DropFrame.BackgroundColor3 = Theme.ElementBackground
             DropFrame.Size = UDim2.new(1, 0, 0, 36)
@@ -596,6 +577,157 @@ function Aetherius:CreateWindow(Config)
             end
         end
 
+        function TabObj:CreateInput(ElementConfig)
+            local InpFrame = Instance.new("Frame")
+            InpFrame.Parent = Page
+            InpFrame.BackgroundColor3 = Theme.ElementBackground
+            InpFrame.Size = UDim2.new(1, 0, 0, 48)
+            
+            local Corner = Instance.new("UICorner")
+            Corner.CornerRadius = UDim.new(0, 8)
+            Corner.Parent = InpFrame
+            
+            local Label = Instance.new("TextLabel")
+            Label.Parent = InpFrame
+            Label.BackgroundTransparency = 1
+            Label.Position = UDim2.new(0, 15, 0, 6)
+            Label.Size = UDim2.new(1, -30, 0, 18)
+            Label.Font = Enum.Font.Gotham
+            Label.Text = ElementConfig.Name
+            Label.TextColor3 = Theme.TextColor
+            Label.TextSize = 12
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            
+            local TextBox = Instance.new("TextBox")
+            TextBox.Parent = InpFrame
+            TextBox.BackgroundColor3 = Theme.MainBackground
+            TextBox.Position = UDim2.new(0, 15, 0, 26)
+            TextBox.Size = UDim2.new(1, -30, 0, 16)
+            TextBox.Font = Enum.Font.Gotham
+            TextBox.PlaceholderText = ElementConfig.Placeholder or "Type here..."
+            TextBox.Text = ""
+            TextBox.TextColor3 = Theme.TextColor
+            TextBox.PlaceholderColor3 = Theme.SubTextColor
+            TextBox.TextSize = 12
+            TextBox.TextXAlignment = Enum.TextXAlignment.Left
+            
+            local TextBoxCorner = Instance.new("UICorner")
+            TextBoxCorner.CornerRadius = UDim.new(0, 4)
+            TextBoxCorner.Parent = TextBox
+            
+            local TextBoxPadding = Instance.new("UIPadding")
+            TextBoxPadding.PaddingLeft = UDim.new(0, 8)
+            TextBoxPadding.Parent = TextBox
+            
+            TextBox.FocusLost:Connect(function()
+                if ElementConfig.Callback then ElementConfig.Callback(TextBox.Text) end
+            end)
+        end
+
+        function TabObj:CreateColorPicker(ElementConfig)
+            local PickerFrame = Instance.new("Frame")
+            PickerFrame.Parent = Page
+            PickerFrame.BackgroundColor3 = Theme.ElementBackground
+            PickerFrame.Size = UDim2.new(1, 0, 0, 36)
+            PickerFrame.ClipsDescendants = true
+            
+            local Corner = Instance.new("UICorner")
+            Corner.CornerRadius = UDim.new(0, 8)
+            Corner.Parent = PickerFrame
+            
+            local MainBtn = Instance.new("TextButton")
+            MainBtn.Parent = PickerFrame
+            MainBtn.BackgroundTransparency = 1
+            MainBtn.Size = UDim2.new(1, 0, 0, 36)
+            MainBtn.Text = ""
+            
+            local Label = Instance.new("TextLabel")
+            Label.Parent = MainBtn
+            Label.BackgroundTransparency = 1
+            Label.Position = UDim2.new(0, 15, 0, 0)
+            Label.Size = UDim2.new(1, -100, 1, 0)
+            Label.Font = Enum.Font.Gotham
+            Label.Text = ElementConfig.Name
+            Label.TextColor3 = Theme.TextColor
+            Label.TextSize = 13
+            Label.TextXAlignment = Enum.TextXAlignment.Left
+            
+            local Preview = Instance.new("Frame")
+            Preview.Parent = MainBtn
+            Preview.BackgroundColor3 = ElementConfig.Default or Theme.AccentColor
+            Preview.Position = UDim2.new(1, -45, 0, 8)
+            Preview.Size = UDim2.new(0, 30, 0, 20)
+            
+            local PreviewCorner = Instance.new("UICorner")
+            PreviewCorner.CornerRadius = UDim.new(0, 4)
+            PreviewCorner.Parent = Preview
+            
+            -- Premium Spectrum Picker (Hue Slider + Sat/Val Box)
+            local Content = Instance.new("Frame")
+            Content.Name = "Content"
+            Content.Parent = PickerFrame
+            Content.BackgroundTransparency = 1
+            Content.Position = UDim2.new(0, 15, 0, 40)
+            Content.Size = UDim2.new(1, -30, 0, 100)
+            
+            local SatVal = Instance.new("ImageButton")
+            SatVal.Name = "SatVal"
+            SatVal.Parent = Content
+            SatVal.Position = UDim2.new(0, 0, 0, 0)
+            SatVal.Size = UDim2.new(1, -25, 1, 0)
+            SatVal.Image = "rbxassetid://4155801252"
+            
+            local HueSlider = Instance.new("ImageButton")
+            HueSlider.Name = "Hue"
+            HueSlider.Parent = Content
+            HueSlider.Position = UDim2.new(1, -15, 0, 0)
+            HueSlider.Size = UDim2.new(0, 15, 1, 0)
+            HueSlider.Image = "rbxassetid://3641079629"
+            
+            local SelectedColor = Preview.BackgroundColor3
+            local H, S, V = Color3.toHSV(SelectedColor)
+            
+            local function UpdateColor()
+                SelectedColor = Color3.fromHSV(H, S, V)
+                Preview.BackgroundColor3 = SelectedColor
+                SatVal.ImageColor3 = Color3.fromHSV(H, 1, 1)
+                if ElementConfig.Callback then ElementConfig.Callback(SelectedColor) end
+            end
+            
+            local HueDragging = false
+            HueSlider.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then HueDragging = true end
+            end)
+            local SatDragging = false
+            SatVal.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then SatDragging = true end
+            end)
+            
+            UserInputService.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then HueDragging, SatDragging = false, false end
+            end)
+            
+            UserInputService.InputChanged:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    if HueDragging then
+                        H = 1 - math.clamp((input.Position.Y - HueSlider.AbsolutePosition.Y) / HueSlider.AbsoluteSize.Y, 0, 1)
+                        UpdateColor()
+                    elseif SatDragging then
+                        S = math.clamp((input.Position.X - SatVal.AbsolutePosition.X) / SatVal.AbsoluteSize.X, 0, 1)
+                        V = 1 - math.clamp((input.Position.Y - SatVal.AbsolutePosition.Y) / SatVal.AbsoluteSize.Y, 0, 1)
+                        UpdateColor()
+                    end
+                end
+            end)
+            
+            local Opened = false
+            MainBtn.MouseButton1Click:Connect(function()
+                Opened = not Opened
+                local TargetHeight = Opened and 150 or 36
+                TweenService:Create(PickerFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 0, TargetHeight)}):Play()
+            end)
+        end
+
         function TabObj:CreateSection(Name)
             local SecFrame = Instance.new("Frame")
             SecFrame.Parent = Page
@@ -649,7 +781,7 @@ function Aetherius:CreateWindow(Config)
         local Icon = Icons[Type] or Icons.Notification
         
         PlayNotificationSound(Type)
-
+        
         local TypeColors = {
             Done = Color3.fromRGB(100, 255, 100),
             Error = Color3.fromRGB(255, 80, 80),
@@ -707,7 +839,6 @@ function Aetherius:CreateWindow(Config)
         NoteContent.TextXAlignment = Enum.TextXAlignment.Left
         NoteContent.TextYAlignment = Enum.TextYAlignment.Top
         
-        -- Progress Bar
         local ProgressBar = Instance.new("Frame")
         ProgressBar.Name = "ProgressBar"
         ProgressBar.Parent = Note
